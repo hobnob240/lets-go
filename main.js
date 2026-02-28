@@ -71,8 +71,9 @@
     if (href === path) a.setAttribute("aria-current", "page");
   });
 
-  // Contact form
-  // NOTE: We only intercept submit if the form explicitly requests mailto fallback.
+    // Contact form
+  // IMPORTANT: Submit normally (POST) unless a form explicitly opts into mailto fallback
+  // by adding: data-mailto="true"
   const form = $("#contactForm");
   if (form && form.dataset.mailto === "true") {
     form.addEventListener("submit", (e) => {
@@ -85,14 +86,13 @@
 
       const subject = encodeURIComponent(`NEMORA enquiry${company ? " — " + company : ""}`);
       const body = encodeURIComponent(
-        `Name: ${name}
-Email: ${email}
-Company: ${company}
-
-Message:
-${message}
-`
+        `Name: ${name}\nEmail: ${email}\nCompany: ${company}\n\nMessage:\n${message}\n`
       );
+
+      const to = form.dataset.to || "daniel@nemora.uk";
+      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+    });
+  }
 
       const to = form.dataset.to || "daniel@nemora.uk";
       window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
